@@ -12,7 +12,7 @@ fun main() {
     while (choice != 4) {
         println("1. Add A New Link")
         println("2. View Saved Links")
-        println("3. Delete All Saved Links")
+        println("3. Delete Links")
         println("4. Exit")
 
         print("Pick a option: ")
@@ -34,11 +34,65 @@ fun main() {
                 myFile.forEachLine { println(it) }
             }
             3 -> {
-                if (myFile.exists() && myFile.isFile) {
-                    myFile.delete()
-                    println("All Saved Links Successfully Deleted...")
-                } else {
-                    println("Error While Deleting File")
+                var subChoice = 0
+                while (subChoice != 2) {
+                    println("1. Delete Selected Links")
+                    println("2. Delete All Links")
+                    println("3. Back")
+
+                    print("Pick an option: ")
+
+                    val input = scanner.nextLine()
+                    subChoice = input.toIntOrNull() ?: -1
+
+                    when (subChoice) {
+                        1 -> {
+                            if (!myFile.exists()) {
+                                println("No links to delete.")
+                                break
+                            }
+
+                            val lines = myFile.readLines()
+
+                            if (lines.isEmpty()) {
+                                println("File is empty.")
+                                break
+                            }
+
+                            println("Select link number to delete:")
+                            lines.forEachIndexed { index, line ->
+                                println("${index + 1}. $line")
+                            }
+
+                            print("Enter number: ")
+                            val numberInput = scanner.nextLine()
+                            val indexToDelete = numberInput.toIntOrNull()?.minus(1)
+
+                            if (indexToDelete == null || indexToDelete !in lines.indices) {
+                                println("Invalid selection.")
+                                break
+                            }
+
+                            val updatedLines = lines.filterIndexed { index, _ ->
+                                index != indexToDelete
+                            }
+
+                            myFile.writeText(updatedLines.joinToString("\n") + "\n")
+                            println("Link successfully deleted.")
+                        }
+                        2 -> {
+                        if (myFile.exists() && myFile.isFile) {
+                            myFile.delete()
+                            println("All Saved Links Successfully Deleted...")
+                        } else {
+                            println("Error While Deleting File")
+                        }
+                    }
+                    3 -> {
+                        println("Back to main menu")
+                        break
+                    }
+                    }
                 }
             }
             4 -> {
